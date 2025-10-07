@@ -1,0 +1,83 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.6'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+description = 'Demo project for Spring Boot'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-database-postgresql'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'org.postgresql:postgresql'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	// APIドキュメント（Swagger UI）
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+
+  	// 入力バリデーション（明示）
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+  // キャッシュ（参照系マスタで効く）
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+	implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
+
+  // メトリクス（Prometheusを使う場合）
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+
+  // フロント資材（WebJars：Bootstrap/Icons/Alpine.js）
+	implementation 'org.webjars:webjars-locator-core:0.59'
+	implementation 'org.webjars.npm:bootstrap:5.3.3'
+	implementation 'org.webjars.npm:bootstrap-icons:1.11.3'
+	implementation 'org.webjars.npm:alpinejs:3.14.1'
+
+  	// 帳票系
+	implementation 'com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.10' // HTML→PDF
+	implementation 'org.apache.commons:commons-csv:1.11.0'         // CSV
+  	implementation 'org.apache.poi:poi-ooxml:5.3.0'                // Excel
+
+	// OpenAPI
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+
+  	// DTOマッピング（Lombok派）
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// 統合テストを堅牢に（任意）
+	testImplementation 'org.testcontainers:junit-jupiter:1.20.2'
+	testImplementation 'org.testcontainers:postgresql:1.20.2'
+
+	runtimeOnly 'org.postgresql:postgresql:42.7.3'
+
+	// Spring Boot Config metadata（補完・警告改善用）
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

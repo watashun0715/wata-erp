@@ -1,0 +1,31 @@
+### Java ###
+*.class
+*.jar
+*.war
+*.ear
+*.log
+
+### Gradle ###
+.gradle/
+build/
+out/
+!gradle/wrapper/gradle-wrapper.jar
+
+### IDE ###
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+
+### OS ###
+.DS_Store
+Thumbs.db
+
+### Application ###
+logs/
+tmp/
+.env

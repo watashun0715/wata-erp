@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/wataerp
+    username: postgres
+    password: "P@ssworD" # 記号入りなので必ずダブルクォート
+  jpa:
+    hibernate:
+      ddl-auto: validate # or update（学習中はupdateでもOK）
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true # 使っていなければ false でもOK
+    locations: classpath:db/migration
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+logging:
+  level:
+    org.springframework.jdbc: DEBUG
+    org.hibernate.SQL: DEBUG
