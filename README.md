@@ -38,4 +38,56 @@ Spring Boot で構築した顧客管理APIです。
 
 ## 🧱 技術構成
 
-### レイヤー構成
+---
+
+### 主なライブラリ
+- `spring-boot-starter-web`
+- `spring-boot-starter-validation`
+- `spring-boot-starter-data-jpa`
+- `org.flywaydb:flyway-core`
+- `org.postgresql:postgresql`
+- `springdoc-openapi-starter-webmvc-ui`
+
+---
+
+## ⚙️ エラーハンドリング
+
+統一フォーマットで例外レスポンスを返却。  
+全APIで一貫したエラー構造を実現しました。
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "入力値が不正です。",
+  "path": "/api/v1/customers",
+  "timestamp": "2025-10-07T08:57:52.258Z",
+  "violations": [
+    {
+      "field": "creditLimit",
+      "reason": "値の型が不正です。期待: BigDecimal",
+      "rejectedValue": "aaa"
+    }
+  ]
+}
+
+```
+
+---
+
+## 🧠 設計上の工夫ポイント
+
+### 共通例外ハンドラ
+- @RestControllerAdvice による全API共通のエラー管理。
+- BeanValidation / JSON変換 / DB制約 / 404 / 500 を個別に処理。
+
+### Mapperの導入
+- Entity ⇔ DTO を分離し、ドメインとI/Oの責務を明確化。
+
+### サービスクラスの統合設計
+- 顧客の全取得・単一取得・複数取得を同一メソッドで処理する構成。
+- → コード重複を排除し、保守性向上。
+
+### FlywayによるDBマイグレーション管理
+- DB構成をソース管理下に置き、再現性の高い開発環境を実現。
+
