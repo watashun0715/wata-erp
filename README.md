@@ -38,8 +38,6 @@ Spring Boot で構築した顧客管理APIです。
 
 ## 🧱 技術構成
 
----
-
 ### 主なライブラリ
 - `spring-boot-starter-web`
 - `spring-boot-starter-validation`
