@@ -3,6 +3,7 @@ package com.example.wataerp.shared.error;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 
+import org.slf4j.MDC;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -29,13 +30,15 @@ public class ApiExceptionHandler {
     // 共通のエラーボディ作成
     private ResponseEntity<ApiError> build(HttpStatus status, String message, HttpServletRequest req,
             List<ApiError.Violation> violations) {
+        String correlationId = MDC.get("correlationId");
         ApiError body = new ApiError(
                 status.value(),
                 status.getReasonPhrase(),
                 message,
                 req.getRequestURI(),
                 OffsetDateTime.now().toString(),
-                violations);
+                violations,
+                correlationId);
         return ResponseEntity.status(status).body(body);
     }
 
