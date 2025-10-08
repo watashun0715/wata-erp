@@ -10,15 +10,17 @@ public class ApiError {
     public String path; // 例: /api/v1/customers/C999
     public String timestamp; // ISO8601
     public List<Violation> violations; // バリデーション詳細（任意）
+    public String correlationId; // 相関ID
 
     public ApiError(int status, String error, String message, String path, String timestamp,
-            List<Violation> violations) {
+            List<Violation> violations, String correlationId) {
         this.status = status;
         this.error = error;
         this.message = message;
         this.path = path;
         this.timestamp = timestamp;
         this.violations = violations;
+        this.correlationId = correlationId;
     }
 
     public static class Violation {
