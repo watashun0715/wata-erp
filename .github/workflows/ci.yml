@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      # 省メモリ・再現性向上
+      - name: Gradle prep
+        run: |
+          chmod +x gradlew
+          ./gradlew --version
+
+      # コード整形の逸脱があれば失敗（自動整形はローカルで spotlessApply）
+      - name: Spotless check
+        run: ./gradlew --no-daemon spotlessCheck
+
+      # 単体テスト＋カバレッジ。H2 を使う test プロファイルを有効化
+      - name: Run unit tests with coverage
+        env:
+          SPRING_PROFILES_ACTIVE: test
+        run: |
+          ./gradlew --no-daemon clean test jacocoTestReport
+
+      # しきい値に満たない場合に失敗（必要なら build.gradle の Jacoco ルールに合わせて）
+      - name: Enforce coverage (min 80%)
+        run: |
+          RATE=$(grep -Po 'counter type="INSTRUCTION" missed="\d+" covered="\d+"' build/reports/jacoco/test/jacocoTestReport.xml \
+                 | awk -F'"' '{m+=$4;c+=$6} END{ if (m+c==0) {print 0} else {print (c*100/(m+c))} }')
+          echo "Coverage: ${RATE}%"
+          awk -v r="$RATE" 'BEGIN{exit (r<80)}'
+
+      # テストレポートを保存（失敗時も見られる）
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-reports
+          path: build/test-results/test
+
+      - name: Upload JaCoCo HTML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-html
+          path: build/reports/jacoco/test/html
+
+  # 依存の危険な更新を PR で検出（推奨）
+  dependency-review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
