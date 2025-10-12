@@ -1,14 +1,14 @@
 # 🧮 WataERP API
 
+![Build](https://github.com/watashun0715/wata-erp/actions/workflows/ci.yml/badge.svg)
+![Coverage](.github/badges/jacoco.svg)
+![Branches](.github/badges/branches.svg)
+
 Spring Boot で構築した顧客管理APIです。  
 ドメイン駆動設計（DDD）を意識しつつ、バリデーション、例外ハンドリング、レスポンス標準化など  
 現場レベルの設計品質を意識して構築しました。
 
 ---
-
-![Build](https://github.com/watashun0715/wata-erp/actions/workflows/ci.yml/badge.svg)
-![Coverage](.github/badges/jacoco.svg)
-![Branches](.github/badges/branches.svg)
 
 ## 🚀 プロジェクト概要
 
