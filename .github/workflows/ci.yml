@@ -10,6 +10,9 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 jobs:
   build-test:
     runs-on: ubuntu-latest
@@ -42,13 +45,25 @@ jobs:
         run: |
           ./gradlew --no-daemon clean test jacocoTestReport
 
-      # しきい値に満たない場合に失敗（必要なら build.gradle の Jacoco ルールに合わせて）
-      - name: Enforce coverage (min 80%)
-        run: |
-          RATE=$(grep -Po 'counter type="INSTRUCTION" missed="\d+" covered="\d+"' build/reports/jacoco/test/jacocoTestReport.xml \
-                 | awk -F'"' '{m+=$4;c+=$6} END{ if (m+c==0) {print 0} else {print (c*100/(m+c))} }')
-          echo "Coverage: ${RATE}%"
-          awk -v r="$RATE" 'BEGIN{exit (r<80)}'
+      # ❶ JaCoCo レポートを生成（XML/HTML/CSV）
+      - name: Generate JaCoCo report
+        run: ./gradlew --no-daemon jacocoTestReport
+
+      # ❷ バッジ(svg)を生成（.github/badges/jacoco.svg）
+      - name: Generate coverage badge (JaCoCo)
+        uses: cicirello/jacoco-badge-generator@v2
+        with:
+          jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
+          # もしくは jacoco-xml-file: build/reports/jacoco/test/jacocoTestReport.xml
+          badges-directory: .github/badges
+          generate-branches-badge: true # ブランチカバレッジのバッジも出す場合
+
+      # ❸ 生成したバッジを自動コミット
+      - name: Commit coverage badge
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs(readme): update coverage badge [skip ci]"
+          file_pattern: .github/badges/*.svg
 
       # テストレポートを保存（失敗時も見られる）
       - name: Upload test reports
@@ -64,6 +79,14 @@ jobs:
         with:
           name: jacoco-html
           path: build/reports/jacoco/test/html
+
+      # しきい値に満たない場合に失敗（必要なら build.gradle の Jacoco ルールに合わせて）
+      - name: Enforce coverage (min 80%)
+        run: |
+          RATE=$(grep -Po 'counter type="INSTRUCTION" missed="\d+" covered="\d+"' build/reports/jacoco/test/jacocoTestReport.xml \
+                 | awk -F'"' '{m+=$4;c+=$6} END{ if (m+c==0) {print 0} else {print (c*100/(m+c))} }')
+          echo "Coverage: ${RATE}%"
+          awk -v r="$RATE" 'BEGIN{exit (r<80)}'
 
   # 依存の危険な更新を PR で検出（推奨）
   dependency-review:
