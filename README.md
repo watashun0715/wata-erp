@@ -6,6 +6,10 @@ Spring Boot で構築した顧客管理APIです。
 
 ---
 
+![Build](https://github.com/watashun0715/wata-erp/actions/workflows/ci.yml/badge.svg)
+![Coverage](.github/badges/jacoco.svg)
+![Branches](.github/badges/branches.svg)
+
 ## 🚀 プロジェクト概要
 
 | 項目 | 内容 |
