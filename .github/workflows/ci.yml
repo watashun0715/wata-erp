@@ -38,20 +38,12 @@ jobs:
       - name: Spotless check
         run: ./gradlew --no-daemon spotlessCheck
 
-      # テストレポートを保存（失敗時も見られる）
-      - name: Upload test reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: junit-reports
-          path: build/test-results/test
-
-      - name: Upload JaCoCo HTML
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: jacoco-html
-          path: build/reports/jacoco/test/html
+      # 単体テスト＋カバレッジ。H2 を使う test プロファイルを有効化
+      - name: Run unit tests with coverage
+        env:
+          SPRING_PROFILES_ACTIVE: test
+        run: |
+          ./gradlew --no-daemon clean test jacocoTestReport
 
       # ❶ JaCoCo レポートを生成（XML/HTML/CSV）
       - name: Generate JaCoCo report
@@ -73,12 +65,20 @@ jobs:
           commit_message: "docs(readme): update coverage badge [skip ci]"
           file_pattern: .github/badges/*.svg
 
-      # 単体テスト＋カバレッジ。H2 を使う test プロファイルを有効化
-      - name: Run unit tests with coverage
-        env:
-          SPRING_PROFILES_ACTIVE: test
-        run: |
-          ./gradlew --no-daemon clean test jacocoTestReport
+      # テストレポートを保存（失敗時も見られる）
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-reports
+          path: build/test-results/test
+
+      - name: Upload JaCoCo HTML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-html
+          path: build/reports/jacoco/test/html
 
       # しきい値に満たない場合に失敗（必要なら build.gradle の Jacoco ルールに合わせて）
       - name: Enforce coverage (min 80%)
