@@ -26,12 +26,6 @@ public class Customer {
   @Column(name = "code", nullable = false, length = 32)
   private String code;
 
-  @Column(name = "last_name", length = 64)
-  private String lastName;
-
-  @Column(name = "first_name", length = 64)
-  private String firstName;
-
   @Column(name = "company_name", length = 128)
   private String companyName;
 
@@ -61,22 +55,6 @@ public class Customer {
 
   public void setCode(String code) {
     this.code = code;
-  }
-
-  public String getLastName() {
-    return lastName;
-  }
-
-  public void setLastName(String lastName) {
-    this.lastName = lastName;
-  }
-
-  public String getFirstName() {
-    return firstName;
-  }
-
-  public void setFirstName(String firstName) {
-    this.firstName = firstName;
   }
 
   public String getCompanyName() {
