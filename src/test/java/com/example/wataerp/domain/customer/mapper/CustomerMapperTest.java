@@ -33,7 +33,7 @@ class CustomerMapperTest {
     CustomerRequest req = new CustomerRequest();
     req.setCode("  C001  "); // 通常 merge では code は触らない想定だが trim は通る
     req.setName("  New Co  "); // 上書き対象
-    req.setTaxCode(null); // null → 無視想定（元の値保持）
+    req.setTaxCode("T-NEW"); // 上書き対象
     req.setCreditLimit(new BigDecimal("20.50")); // 上書き対象
 
     // when
@@ -43,8 +43,39 @@ class CustomerMapperTest {
     assertThat(entity.getCode()).isEqualTo("C001"); // 変化なし（trim 済みでも値同じ）
     assertThat(entity.getCompanyName()).isEqualTo("New Co"); // 上書き
     assertThat(entity.getBillingAddress()).isEqualTo("Old Addr"); // 未指定 → そのまま
-    assertThat(entity.getTaxCode()).isEqualTo("T-OLD"); // 未指定(null) → そのまま
+    assertThat(entity.getTaxCode()).isEqualTo("T-NEW"); // 未指定(null) → そのまま
     assertThat(entity.getCreditLimit()).isEqualByComparingTo("20.50"); // 上書き
+  }
+
+  @Test
+  @DisplayName("merge: リクエストが全て null の場合は元の値を保持する")
+  void merge_requestFieldsAreNull() {
+    // given: 既存エンティティ
+    Customer entity = new Customer();
+    entity.setId(UUID.randomUUID());
+    entity.setCode("C001");
+    entity.setCompanyName("Old Co");
+    entity.setBillingAddress("Old Addr");
+    entity.setTaxCode("T-OLD");
+    entity.setCreditLimit(new BigDecimal("10.00"));
+
+    // and: 一部のみ指定されたリクエスト（name と creditLimit は更新、空白のみ/未指定は無視）
+    CustomerRequest req = new CustomerRequest();
+    req.setCode(null); // null → 無視想定（元の値保持）
+    req.setName(null); // null → 無視想定（元の値保持）
+    req.setBillingAddress(null); // null → 無視想定（元の値保持）
+    req.setTaxCode(null); // null → 無視想定（元の値保持）
+    req.setCreditLimit(null); // null → 無視想定（元の値保持）
+
+    // when
+    CustomerMapper.merge(entity, req);
+
+    // then
+    assertThat(entity.getCode()).isEqualTo("C001"); // 変化なし（trim 済みでも値同じ）
+    assertThat(entity.getCompanyName()).isEqualTo("Old Co"); // 上書き
+    assertThat(entity.getBillingAddress()).isEqualTo("Old Addr"); // 未指定 → そのまま
+    assertThat(entity.getTaxCode()).isEqualTo("T-OLD"); // 未指定(null) → そのまま
+    assertThat(entity.getCreditLimit()).isEqualByComparingTo("10.00"); // 上書き
   }
 
   @Test
@@ -78,6 +109,37 @@ class CustomerMapperTest {
     assertThat(entity.getCreditLimit()).isEqualByComparingTo("30.00");
   }
 
+  @Test
+  @DisplayName("overwrite: すべての項目を上書きする（trimOrNullの規則が適用される）")
+  void overwrite_creditLimitIsNull() {
+    // given: 既存エンティティ
+    Customer entity = new Customer();
+    entity.setId(UUID.randomUUID());
+    entity.setCode("C001");
+    entity.setCompanyName("Old Co");
+    entity.setBillingAddress("Old Addr");
+    entity.setTaxCode("T-OLD");
+    entity.setCreditLimit(new BigDecimal("10.00"));
+
+    // and: 全フィールド指定のリクエスト（空白のみは null 化される想定）
+    CustomerRequest req = new CustomerRequest();
+    req.setCode("  C999  ");
+    req.setName("  New Co  ");
+    req.setBillingAddress("   "); // 空白のみ → null に
+    req.setTaxCode("  T-NEW  ");
+    req.setCreditLimit(null);
+
+    // when
+    CustomerMapper.overwrite(entity, req);
+
+    // then
+    assertThat(entity.getCode()).isEqualTo("C999");
+    assertThat(entity.getCompanyName()).isEqualTo("New Co");
+    assertThat(entity.getBillingAddress()).isNull(); // 空白のみ → null
+    assertThat(entity.getTaxCode()).isEqualTo("T-NEW");
+    assertThat(entity.getCreditLimit()).isEqualByComparingTo(BigDecimal.ZERO); // null → 0
+  }
+
   // ------------------------
   // 既存メソッドの押さえ（差分があれば拾う）
   // ------------------------
@@ -99,6 +161,25 @@ class CustomerMapperTest {
     assertThat(entity.getBillingAddress()).isNull();
     assertThat(entity.getTaxCode()).isEqualTo("T-777");
     assertThat(entity.getCreditLimit()).isEqualByComparingTo("999.99");
+  }
+
+  @Test
+  @DisplayName("toNewEntity:  creditLimit が null の場合は 0 に初期化される")
+  void toNewEntity_creditLimitIsNull() {
+    CustomerRequest req = new CustomerRequest();
+    req.setCode("  C777 ");
+    req.setName("  Seven  ");
+    req.setBillingAddress("New Co");
+    req.setTaxCode("  T-777 ");
+    req.setCreditLimit(null);
+
+    Customer entity = CustomerMapper.toNewEntity(req);
+
+    assertThat(entity.getCode()).isEqualTo("C777");
+    assertThat(entity.getCompanyName()).isEqualTo("Seven");
+    assertThat(entity.getBillingAddress()).isEqualTo("New Co");
+    assertThat(entity.getTaxCode()).isEqualTo("T-777");
+    assertThat(entity.getCreditLimit()).isEqualByComparingTo(BigDecimal.ZERO);
   }
 
   @Test
