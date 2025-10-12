@@ -37,7 +37,7 @@ class CustomerServiceTest {
     // given
     CustomerRequest req = new CustomerRequest();
     req.setCode("C001");
-    req.setName("Acme");
+    req.setCompanyName("Acme");
     req.setBillingAddress("Tokyo");
     req.setTaxCode("T123");
     req.setCreditLimit(new BigDecimal("100.00"));
@@ -55,7 +55,7 @@ class CustomerServiceTest {
 
     assertThat(saved.getCode()).isEqualTo("C001");
     assertThat(saved.getId()).isNotNull();
-    assertThat(res.getName()).isEqualTo("Acme");
+    assertThat(res.getCompanyName()).isEqualTo("Acme");
   }
 
   @Test
@@ -112,7 +112,7 @@ class CustomerServiceTest {
   void create_conflict_throwsException() {
     CustomerRequest req = new CustomerRequest();
     req.setCode("C001");
-    req.setName("Acme");
+    req.setCompanyName("Acme");
 
     when(repo.existsByCode("C001")).thenReturn(true);
 

@@ -38,7 +38,7 @@ class CustomerApiControllerTest {
   void createCustomer_success() throws Exception {
     CustomerResponse response = new CustomerResponse();
     response.setCode("C001");
-    response.setName("Acme");
+    response.setCompanyName("Acme");
     response.setBillingAddress("Tokyo");
     response.setTaxCode("T1234567890123");
     response.setCreditLimit(new BigDecimal("100.00"));
@@ -53,7 +53,7 @@ class CustomerApiControllerTest {
                     """
                     {
                         "code": "C001",
-                        "name": "Acme",
+                        "companyName": "Acme",
                         "billingAddress": "Tokyo",
                         "taxCode": "T1234567890123",
                         "creditLimit": 100.00
@@ -64,7 +64,7 @@ class CustomerApiControllerTest {
             header()
                 .string("Location", org.hamcrest.Matchers.containsString("/api/v1/customers/C001")))
         .andExpect(jsonPath("$.code").value("C001"))
-        .andExpect(jsonPath("$.name").value("Acme"));
+        .andExpect(jsonPath("$.companyName").value("Acme"));
   }
 
   @Test
@@ -72,14 +72,14 @@ class CustomerApiControllerTest {
   void getAllCustomers_success() throws Exception {
     CustomerResponse response1 = new CustomerResponse();
     response1.setCode("C001");
-    response1.setName("Acme");
+    response1.setCompanyName("Acme");
     response1.setBillingAddress("Tokyo");
     response1.setTaxCode("T123");
     response1.setCreditLimit(new BigDecimal("100.00"));
 
     CustomerResponse response2 = new CustomerResponse();
     response2.setCode("C002");
-    response2.setName("Beta");
+    response2.setCompanyName("Beta");
     response2.setBillingAddress("Osaka");
     response2.setTaxCode("T456");
     response2.setCreditLimit(new BigDecimal("200.00"));
@@ -98,7 +98,7 @@ class CustomerApiControllerTest {
   void getCustomerByCode_success() throws Exception {
     CustomerResponse response = new CustomerResponse();
     response.setCode("C001");
-    response.setName("Acme");
+    response.setCompanyName("Acme");
     response.setBillingAddress("Tokyo");
     response.setTaxCode("T1234567890123");
     response.setCreditLimit(new BigDecimal("100.00"));
@@ -107,7 +107,7 @@ class CustomerApiControllerTest {
     mvc.perform(get("/api/v1/customers/C001"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.code").value("C001"))
-        .andExpect(jsonPath("$.name").value("Acme"));
+        .andExpect(jsonPath("$.companyName").value("Acme"));
   }
 
   @Test
@@ -115,14 +115,14 @@ class CustomerApiControllerTest {
   void getCustomersByCodes_success() throws Exception {
     CustomerResponse response1 = new CustomerResponse();
     response1.setCode("C001");
-    response1.setName("Acme");
+    response1.setCompanyName("Acme");
     response1.setBillingAddress("Tokyo");
     response1.setTaxCode("T123");
     response1.setCreditLimit(new BigDecimal("100.00"));
 
     CustomerResponse response2 = new CustomerResponse();
     response2.setCode("C002");
-    response2.setName("Beta");
+    response2.setCompanyName("Beta");
     response2.setBillingAddress("Osaka");
     response2.setTaxCode("T456");
     response2.setCreditLimit(new BigDecimal("200.00"));
@@ -155,7 +155,7 @@ class CustomerApiControllerTest {
                     """
                     {
                         "code": "C001",
-                        "name": "Acme",
+                        "companyName": "Acme",
                         "billingAddress": "Tokyo",
                         "taxCode": "T1234567890123",
                         "creditLimit": 100.00

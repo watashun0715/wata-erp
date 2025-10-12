@@ -15,7 +15,7 @@ public class CustomerRequest {
 
   @NotBlank
   @Size(max = 128, message = "最大文字数は{max}文字です")
-  private String name;
+  private String companyName;
 
   @Size(max = 256, message = "最大文字数は{max}文字です")
   private String billingAddress;
@@ -34,12 +34,12 @@ public class CustomerRequest {
     this.code = code;
   }
 
-  public String getName() {
-    return name;
+  public String getCompanyName() {
+    return companyName;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setCompanyName(String companyName) {
+    this.companyName = companyName;
   }
 
   public String getBillingAddress() {

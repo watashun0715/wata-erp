@@ -17,7 +17,7 @@ public final class CustomerMapper {
     customer.setCode((trim(req.getCode())));
     // 最初は法人顧客のみを想定、あとから個人の場合に改修する
     // カスタムメソッドでtrimしてあげることでヌルポになるリスクをなくす
-    customer.setCompanyName(trim(req.getName()));
+    customer.setCompanyName(trim(req.getCompanyName()));
     customer.setBillingAddress(trimOrNull(req.getBillingAddress()));
     customer.setTaxCode(trimOrNull(req.getTaxCode()));
     customer.setCreditLimit(req.getCreditLimit() != null ? req.getCreditLimit() : BigDecimal.ZERO);
@@ -26,7 +26,7 @@ public final class CustomerMapper {
 
   public static void overwrite(Customer customer, CustomerRequest req) {
     customer.setCode((trim(req.getCode())));
-    customer.setCompanyName(trim(req.getName()));
+    customer.setCompanyName(trim(req.getCompanyName()));
     customer.setBillingAddress(trimOrNull(req.getBillingAddress()));
     customer.setTaxCode(trimOrNull(req.getTaxCode()));
     // PUT想定: creditLimitがnullなら0に初期化
@@ -35,7 +35,7 @@ public final class CustomerMapper {
 
   public static void merge(Customer customer, CustomerRequest req) {
     if (req.getCode() != null) customer.setCode((trim(req.getCode())));
-    if (req.getName() != null) customer.setCompanyName(trim(req.getName()));
+    if (req.getCompanyName() != null) customer.setCompanyName(trim(req.getCompanyName()));
     if (req.getBillingAddress() != null)
       customer.setBillingAddress(trimOrNull(req.getBillingAddress()));
     if (req.getTaxCode() != null) customer.setTaxCode(trimOrNull(req.getTaxCode()));
@@ -48,7 +48,7 @@ public final class CustomerMapper {
     // Responseに返すときはerpシステムなどはnullで来たらnullで返すでよさそう。
     // UIにこだわっているシステムなどはここで""に変換してあげるなどしても良い。
     res.setCode(trim(customer.getCode()));
-    res.setName(trim(customer.getCompanyName()));
+    res.setCompanyName(trim(customer.getCompanyName()));
     res.setBillingAddress(trimOrNull(customer.getBillingAddress()));
     res.setTaxCode(trimOrNull(customer.getTaxCode()));
     res.setCreditLimit(customer.getCreditLimit());

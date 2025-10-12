@@ -32,7 +32,7 @@ class CustomerMapperTest {
     // and: 一部のみ指定されたリクエスト（name と creditLimit は更新、空白のみ/未指定は無視）
     CustomerRequest req = new CustomerRequest();
     req.setCode("  C001  "); // 通常 merge では code は触らない想定だが trim は通る
-    req.setName("  New Co  "); // 上書き対象
+    req.setCompanyName("  New Co  "); // 上書き対象
     req.setTaxCode("T-NEW"); // 上書き対象
     req.setCreditLimit(new BigDecimal("20.50")); // 上書き対象
 
@@ -62,7 +62,7 @@ class CustomerMapperTest {
     // and: 一部のみ指定されたリクエスト（name と creditLimit は更新、空白のみ/未指定は無視）
     CustomerRequest req = new CustomerRequest();
     req.setCode(null); // null → 無視想定（元の値保持）
-    req.setName(null); // null → 無視想定（元の値保持）
+    req.setCompanyName(null); // null → 無視想定（元の値保持）
     req.setBillingAddress(null); // null → 無視想定（元の値保持）
     req.setTaxCode(null); // null → 無視想定（元の値保持）
     req.setCreditLimit(null); // null → 無視想定（元の値保持）
@@ -93,7 +93,7 @@ class CustomerMapperTest {
     // and: 全フィールド指定のリクエスト（空白のみは null 化される想定）
     CustomerRequest req = new CustomerRequest();
     req.setCode("  C999  ");
-    req.setName("  New Co  ");
+    req.setCompanyName("  New Co  ");
     req.setBillingAddress("   "); // 空白のみ → null に
     req.setTaxCode("  T-NEW  ");
     req.setCreditLimit(new BigDecimal("30.00"));
@@ -124,7 +124,7 @@ class CustomerMapperTest {
     // and: 全フィールド指定のリクエスト（空白のみは null 化される想定）
     CustomerRequest req = new CustomerRequest();
     req.setCode("  C999  ");
-    req.setName("  New Co  ");
+    req.setCompanyName("  New Co  ");
     req.setBillingAddress("   "); // 空白のみ → null に
     req.setTaxCode("  T-NEW  ");
     req.setCreditLimit(null);
@@ -149,7 +149,7 @@ class CustomerMapperTest {
   void toNewEntity_mapsAndTrims() {
     CustomerRequest req = new CustomerRequest();
     req.setCode("  C777 ");
-    req.setName("  Seven  ");
+    req.setCompanyName("  Seven  ");
     req.setBillingAddress("   "); // 空白のみ → null 期待
     req.setTaxCode("  T-777 ");
     req.setCreditLimit(new BigDecimal("999.99"));
@@ -168,7 +168,7 @@ class CustomerMapperTest {
   void toNewEntity_creditLimitIsNull() {
     CustomerRequest req = new CustomerRequest();
     req.setCode("  C777 ");
-    req.setName("  Seven  ");
+    req.setCompanyName("  Seven  ");
     req.setBillingAddress("New Co");
     req.setTaxCode("  T-777 ");
     req.setCreditLimit(null);
@@ -195,7 +195,7 @@ class CustomerMapperTest {
 
     CustomerResponse r = CustomerMapper.toResponse(entity);
     assertThat(r.getCode()).isEqualTo("C123");
-    assertThat(r.getName()).isEqualTo("Acme");
+    assertThat(r.getCompanyName()).isEqualTo("Acme");
     assertThat(r.getBillingAddress()).isEqualTo("Tokyo");
     assertThat(r.getTaxCode()).isEqualTo("T-123");
     assertThat(r.getCreditLimit()).isEqualByComparingTo("100.00");
